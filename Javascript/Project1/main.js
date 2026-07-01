@@ -1,7 +1,4 @@
-// Importing packages here
-import fs from "node:fs/promises";
-import fsAlt from "fs";
-import path from "node:path";
+//MAIN.JS FILE
 
 //BACKEND STUFF
 import {
@@ -19,9 +16,12 @@ import {
   menuDialog,
   deckJsonFromIndex, //returns __FILENAME
   getTemporaryQuestionsArray,
+  editMenuDialog,
+  showQuestions,
 } from "./userIntFunctions.js";
 import readline from "readline/promises";
 import { exit, stdin as input, stdout as output } from "node:process";
+import { create } from "node:domain";
 
 // Tool setup
 
@@ -37,8 +37,8 @@ while (!mainExit) {
   let indexx = 0;
   //END OF VARIABLES
   menuDialog();
-  const action = Number(await rl.question("Your choice: "));
-  if (action === 2) {
+  const action = await rl.question("Your choice: ");
+  if (Number(action) === 2) {
     // PRACTICE
     showDecks();
     const chosenDeckIndex = Number(
@@ -51,7 +51,7 @@ while (!mainExit) {
     for (const { question, explanation, answer } of questions) {
       console.log(`Question ${indexx + 1}: ${question}`);
       const answerResponse = await rl.question(
-        "Do you know the answer? (Y/N): ",
+        "Is the question/statement correct? (Y/N): ",
       );
       if (answerResponse.trim().toUpperCase() === answer) {
         console.log(`Correct response. Explanation: \n ${explanation}`);
@@ -71,12 +71,70 @@ while (!mainExit) {
     console.table(tempoStats);
 
     //OPENING FILE WITH THE NAME THAT THE FILENAME RETURNED
-  } else if (action === 1) {
-    // Edit
-  } else if (action === 3) {
+  } else if (Number(action) === 1) {
+    let inEditMode = false;
+    editMenuDialog();
+    const primaryEditChoice = await rl.question("Your Choice: ");
+    if (Number(primaryEditChoice) === 1) {
+      const tempName = await rl.question("Name of the deck: ");
+      await createDeck(tempName);
+    } else if (Number(primaryEditChoice) === 2) {
+      console.log("Please write the Index of the deck you want to delete: \n ");
+      await showDecks();
+      const deleteChoice = await rl.question("Your choice: ");
+      const deckToDelete = await deckJsonFromIndex(Number(deleteChoice));
+      await deleteDeck(deckToDelete);
+      console.log("Deleted deck: " + deckToDelete);
+    } else if (Number(primaryEditChoice) === 3) {
+      console.log("Which deck you would like to edit(number): ");
+      await showDecks();
+      const indSelDeck = await rl.question("Your choice: ");
+      const selDeck = await deckJsonFromIndex(Number(indSelDeck));
+      inEditMode = true;
+      while (inEditMode) {
+        const tempQuestion = await rl.question("Write your question: ");
+        const tempExplanation = await rl.question("Give an explanation: ");
+        const tempYN = await rl.question(
+          "Is the question(statement) correct? [Y/N]: ",
+        );
+        try {
+          await addToDeck(selDeck, tempQuestion, tempYN, tempExplanation);
+        } catch (error) {
+          console.warn("There was an error: " + error.message);
+          inEditMode = false;
+        }
+        console.log("Question has been added");
+
+        const quitChoice = await rl.question("Add another one? [Y/N]: ");
+        if (quitChoice.toUpperCase().trim() === "Y") {
+          inEditMode = true;
+        } else {
+          inEditMode = false;
+        }
+      }
+    } else if (Number(primaryEditChoice) === 4) {
+      console.log("Please select the deck (Number): ");
+      await showDecks();
+      const secDeckSel = await rl.question("Your Choice: ");
+      const selDeck = await deckJsonFromIndex(Number(secDeckSel));
+      await showQuestions(selDeck);
+      const quesToDel = await rl.question("Which index to delete (Number): ");
+      await deleteQuestion(selDeck, Number(quesToDel));
+    } else if (Number(primaryEditChoice) === 5) {
+      console.log("Please select the deck (Number): ");
+      await showDecks();
+      const secDeckSel = await rl.question("Your Choice: ");
+      const selDeck = await deckJsonFromIndex(Number(secDeckSel));
+      await showQuestions(selDeck);
+    }
+  } else if (Number(action) === 3) {
     // Exit
     rl.close();
     console.log("Thank you for using my app!");
+    mainExit = true;
+  } else {
+    console.warn("Mistake was made on the backend. Please restart the app.");
+    rl.close();
     mainExit = true;
   }
 

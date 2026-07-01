@@ -1,3 +1,5 @@
+//FILEMODFUNCTIONS.JS
+
 import fs from "node:fs/promises";
 import fsAlt from "fs";
 
@@ -34,7 +36,7 @@ export async function createDeck(deckName) {
 }
 
 export async function addToDeck(deckName, questionS, answerS, explanationS) {
-  const filePath = `./Decks/${deckName}.json`;
+  const filePath = `./Decks/${deckName}`;
 
   if (fsAlt.existsSync(filePath)) {
     try {
@@ -60,7 +62,7 @@ export async function addToDeck(deckName, questionS, answerS, explanationS) {
 }
 
 export async function deleteDeck(deckName) {
-  const filePath = `./Decks/${deckName}.json`;
+  const filePath = `./Decks/${deckName}`;
 
   if (fsAlt.existsSync(filePath)) {
     try {
@@ -77,7 +79,7 @@ export async function deleteDeck(deckName) {
 }
 
 export async function deleteQuestion(deckName, index) {
-  const filePath = `./Decks/${deckName}.json`;
+  const filePath = `./Decks/${deckName}`;
 
   if (fsAlt.existsSync(filePath)) {
     try {

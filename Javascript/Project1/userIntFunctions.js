@@ -1,3 +1,5 @@
+//USERINTFUNCTIONS.JS
+
 import fs from "node:fs/promises";
 import fsAlt from "fs";
 import path from "node:path";
@@ -63,4 +65,19 @@ export async function menuDialog() {
   );
 }
 
-export async function startPractice() {}
+export async function editMenuDialog() {
+  console.log(
+    `Please select the function: \n 1) Create New Deck \n 2) Delete A Deck \n 3) Add A Flashcard \n 4) Delete A Flash Card \n 5) See Flash Cards `,
+  );
+}
+
+export async function showQuestions(deckname) {
+  const dataOriginal = await fs.readFile(`./Decks/${deckname}`, "utf8");
+
+  try {
+    const dataProcessed = await JSON.parse(dataOriginal);
+    console.table(await dataProcessed);
+  } catch (error) {
+    console.log("There was an error: " + error.message);
+  }
+}
