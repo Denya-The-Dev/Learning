@@ -1,0 +1,12 @@
+[
+  {
+    "question": "Is B747 a Jumbo Jet",
+    "explanation": "Yes, it is a jumbo jet",
+    "answer": "Y"
+  },
+  {
+    "question": "Is A320 A Jumbo Jet",
+    "explanation": "No, A320 is a tiny bebe",
+    "answer": "N"
+  }
+]
