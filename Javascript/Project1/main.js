@@ -31,6 +31,11 @@ let mainExit = false;
 // Main loops
 greetInit();
 while (!mainExit) {
+  // VARIABLES FOR THE LOOP
+  let correctAnswers = 0;
+  let wrongAnswers = 0;
+  let indexx = 0;
+  //END OF VARIABLES
   menuDialog();
   const action = Number(await rl.question("Your choice: "));
   if (action === 2) {
@@ -42,9 +47,28 @@ while (!mainExit) {
     const filename = await deckJsonFromIndex(chosenDeckIndex);
     const questions = await getTemporaryQuestionsArray(filename);
     console.log(questions);
-    questions.forEach((element, index) => {
-      console.log(`Question ${index + 1}: ${element.question}`);
-    });
+    //THE FOR LOOP TO LOOP THROUGH QUESTIONS
+    for (const { question, explanation, answer } of questions) {
+      console.log(`Question ${indexx + 1}: ${question}`);
+      const answerResponse = await rl.question(
+        "Do you know the answer? (Y/N): ",
+      );
+      if (answerResponse.trim().toUpperCase() === answer) {
+        console.log(`Correct response. Explanation: \n ${explanation}`);
+        correctAnswers++;
+      } else {
+        console.log(`Incorrect response. Explanation: ${explanation}`);
+        wrongAnswers++;
+      }
+      indexx++;
+    }
+    const tempoStats = {
+      CorrectAnswers: correctAnswers,
+      WrongAnswers: wrongAnswers,
+      TotalQuestions: questions.length,
+      CorrectPercentage: `${(correctAnswers / questions.length) * 100}%`,
+    };
+    console.table(tempoStats);
 
     //OPENING FILE WITH THE NAME THAT THE FILENAME RETURNED
   } else if (action === 1) {
